@@ -90,6 +90,7 @@ class MuseumTest < MiniTest::Test
       end
 
     def test_it_can_select_patrons_by_exhibit_interest
+
       dmns = Museum.new("Denver Museum of Nature and Science")
       gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
       dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
@@ -111,5 +112,51 @@ class MuseumTest < MiniTest::Test
       expected_hash = {gems_and_minerals => [bob], dead_sea_scrolls => [bob, sally], imax => []}
       assert_equal expected_hash, dmns.patrons_by_exhibit_interest
     end
+
+    def test_patrons_of_exhibits
+      dmns = Museum.new("Denver Museum of Nature and Science")
+      gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
+      imax = Exhibit.new("IMAX", 15)
+      dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
+      dmns.add_exhibit(gems_and_minerals)
+      dmns.add_exhibit(imax)
+      dmns.add_exhibit(dead_sea_scrolls)
+
+      tj = Patron.new("TJ", 7)
+      tj.add_interest("IMAX")
+      tj.add_interest("Dead Sea Scrolls")
+      dmns.admit(tj)
+
+      assert_equal 7, tj.spending_money
+
+      bob = Patron.new("Bob", 10)
+      bob.add_interest("Dead Sea Scrolls")
+      bob.add_interest("IMAX")
+      dmns.admit(bob)
+
+      assert_equal 0, bob.spending_money
+
+      sally = Patron.new("Sally", 20)
+      sally.add_interest("IMAX")
+      sally.add_interest("Dead Sea Scrolls")
+      dmns.admit(sally)
+
+      assert_equal 5, sally.spending_money
+
+      morgan = Patron.new("Morgan", 15)
+      morgan.add_interest("Gems and Minerals")
+      morgan.add_interest("Dead Sea Scrolls")
+      dmns.admit(morgan)
+      # binding.pry
+
+      assert_equal 5, morgan.spending_money
+
+      expected_hash = {dead_sea_scrolls => [bob, morgan], imax => [sally], gems_and_minerals => [morgan] }
+
+      assert_equal expected_hash, dmns.patrons_of_exhibits
+    end
+
+
+
 
 end
