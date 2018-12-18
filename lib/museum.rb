@@ -1,10 +1,12 @@
 class Museum
   attr_reader :name,
-              :exhibits
+              :exhibits,
+              :patrons
 
   def initialize(name)
     @name = name
     @exhibits = []
+    @patrons = []
   end
 
   def add_exhibit(exhibit)
@@ -23,5 +25,28 @@ class Museum
     return recommended
   end
 
+  def admit(patron)
+    @patrons << patron
+  end
+
+  def patrons_by_exhibit_interest
+    hash = {}
+    @patrons.each do |patron|
+      recommend_exhibits(patron).each do |exhibit|
+        if hash.has_key?(exhibit)
+          hash[exhibit].push(patron)
+        else
+        hash[exhibit] = [patron]
+        end
+      end
+    end
+    @exhibits.each do |exhibit|
+      if hash.has_key?(exhibit)
+      else
+        hash[exhibit] = []
+      end
+    end
+    return hash
+  end
 
 end
